@@ -72,10 +72,10 @@ logger "Detected network load tx: $tx Mbit/s rx: $rx Mbit/s"
 #if there are to high values detected
 
 if [ $rx -gt 99 ]; then
-	$rx=99
+	rx=99
 fi
 if [ $tx -gt 99 ]; then
-	$tx=99
+	tx=99
 fi
 
 #get remainig bandwith
@@ -85,10 +85,10 @@ tx=$(expr 85 - $tx)
 #if lower than 1 Mbit set to 1 Mbit
 # else we would set batman to default values
 if [ $rx -lt 1 ]; then
-	$rx=1
+	rx=1
 fi
 if [ $tx -lt 1 ]; then
-	$tx=1
+	tx=1
 fi
 
 #use highest value
