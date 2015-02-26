@@ -74,11 +74,21 @@ if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then
   fi
 
   KEY="key \"$KEY\";"
-
+  
+  if [ -f $DIR$HWID ]; then
+  	if [ "$(cat $DIR$HWID)" == "$KEY" ]; then
+  		logger "server-worker: no need to reimport '$HWID' for community '$COMMUNITY'"
+  		echo $JOBID > server-worker.last
+  		exit 0
+  	else
+  		logger "server-worker: overwriting fastd-key for hwid '$HWID' in community '$COMMUNITY'"
+  	fi
+  else
+    logger "server-worker: importing fastd-key for new hwid '$HWID' in community '$COMMUNITY'"
+  fi
+  
   echo $KEY > $DIR$HWID
   kill -HUP $(ps aux | grep fastd | grep $COMMUNITY | awk '{print $2}')
-
-  echo "deploy $HWID $COMMUNITY"
 fi
 
 echo $JOBID > server-worker.last
