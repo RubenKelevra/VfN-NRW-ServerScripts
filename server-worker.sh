@@ -1,8 +1,21 @@
 #/bin/bash
-LAST=$(cat server-worker.last)
-if [ -z "$LAST" ]; then
-  echo lastid not found
-  exit
+LAST=""
+LAST_file='server-worker.last'
+
+if [ -f "$LAST_file" ]; then
+  LAST=$(cat server-worker.last)
+  
+  if [ -z "$LAST" ]; then
+    echo "lastid not found, starting from top"
+    LAST=1
+    echo "$LAST" > "$LAST_file" || exit 1
+  elif [[ ! "$LAST" =~ ^-?[0-9]+$ ]]; then
+    echo "lastid is broken, starting from top"
+    LAST=1
+    echo "$LAST" > "$LAST_file" || exit 1
+  fi
+else
+  touch $LAST_file || exit 1
 fi
 
 JOBLINE=$(curl -s http://freifunk.liztv.net/api/serverjobs.php?last=$LAST)
@@ -11,10 +24,17 @@ if [ -z "$JOBLINE" ]; then
 fi
 
 JOBID=$(echo "$JOBLINE" | cut -d '|' -f 1)
+if [[ ! "$JOBID" =~ ^-?[0-9]+$ ]]; then
+  exit 1
+fi
+
 JOB=$(echo "$JOBLINE" | cut -d '|' -f 2)
 
 if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then (
   HWID=$(echo "$JOB" | cut -d ' ' -f 2)
+  if [ ${#HWID} -ne 12 ]; then
+    exit 1
+  fi
   COMMUNITY_EXPECTED=$(echo "$JOB" | cut -d ' ' -f 3)
 
   RESPONSE=$(curl -sS http://freifunk.liztv.net/api/fastd-key.php?hwid=$HWID)
