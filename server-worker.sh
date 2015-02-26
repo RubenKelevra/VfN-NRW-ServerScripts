@@ -79,7 +79,7 @@ if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then (
   kill -HUP $(ps aux | grep fastd | grep $COMMUNITY | awk '{print $2}')
   )
 
-  echo deploy $HWID $COMMUNITY
+  echo "deploy $HWID $COMMUNITY"
 fi
 
 echo $JOBID > server-worker.last
