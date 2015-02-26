@@ -1,4 +1,9 @@
 #/bin/bash
+
+random_=$[ ( $RANDOM % 20 ) + 2 ]
+echo "sleeping $(echo $random_)s seconds..."
+sleep $(echo $random_)s
+
 LAST=""
 LAST_file='server-worker.last'
 
