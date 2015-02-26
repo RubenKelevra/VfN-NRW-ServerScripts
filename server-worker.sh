@@ -8,7 +8,7 @@ LAST=""
 LAST_file='server-worker.last'
 
 if [ -f "$LAST_file" ]; then
-  LAST=$(cat server-worker.last)
+  LAST=$(cat "$LAST_file")
   
   if [ -z "$LAST" ]; then
     echo "lastid not found, starting from top"
@@ -45,7 +45,8 @@ if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then
   RESPONSE=$(curl -sS http://freifunk.liztv.net/api/fastd-key.php?hwid=$HWID)
 
   if [ -z "$RESPONSE" ]; then
-    echo "No such HWID found in Database"
+    logger "server-worker: Error: No such HWID found in Database"
+    echo $JOBID > "$LAST_file"
     exit 1
   fi
 
@@ -53,28 +54,33 @@ if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then
   KEY=$(echo $RESPONSE | cut -d'|' -f 2)
 
   if [ -z "$COMMUNITY" ]; then
-        echo "Error: Community-string fetched from server was empty"
+        logger "server-worker: Error: Community-string fetched from server was empty"
+        echo $JOBID > "$LAST_file"
         exit 1
   fi
 
   if [ -z "$KEY" ]; then
-        echo "Error: Fastd-public-key fetched from server was empty"
+        logger "server-worker: Error: Fastd-public-key fetched from server was empty"
+        echo $JOBID > "$LAST_file"
         exit 1
   fi
 
   if [ ${#KEY} -ne 64 ]; then
-    echo "Error: Fastd-public-key fetched from server was not valid."
+    logger "server-worker: Error: Fastd-public-key fetched from server was not valid."
+    echo $JOBID > "$LAST_file"
     exit 1
   fi
 
   if [ "$COMMUNITY" != "$COMMUNITY_EXPECTED" ]; then
-    echo "Error: Server said community is $COMMUNITY, you entered $COMMUNITY_EXPECTED, you have to fix the database."
+    logger "server-worker: Error: Server said community is $COMMUNITY, you entered $COMMUNITY_EXPECTED, you have to fix the database."
+    echo $JOBID > "$LAST_file"
     exit 1
   fi
 
   DIR="/etc/fastd/$COMMUNITY/nodes/"
   if [ ! -d "$DIR" ]; then
-    echo "Error: we can't locate the folder for the keyfiles"
+    logger "server-worker: Error: we can't locate the folder for the keyfiles"
+    echo $JOBID > "$LAST_file"
     exit 1
   fi
 
@@ -83,7 +89,7 @@ if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then
   if [ -f $DIR$HWID ]; then
   	if [ "$(cat $DIR$HWID)" == "$KEY" ]; then
   		logger "server-worker: no need to reimport '$HWID' for community '$COMMUNITY'"
-  		echo $JOBID > server-worker.last
+  		echo $JOBID > "$LAST_file"
   		exit 0
   	else
   		logger "server-worker: overwriting fastd-key for hwid '$HWID' in community '$COMMUNITY'"
@@ -96,4 +102,4 @@ if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then
   kill -HUP $(ps aux | grep fastd | grep $COMMUNITY | awk '{print $2}')
 fi
 
-echo $JOBID > server-worker.last
+echo $JOBID > "$LAST_file"
