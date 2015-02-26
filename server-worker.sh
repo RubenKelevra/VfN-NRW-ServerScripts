@@ -30,7 +30,7 @@ fi
 
 JOB=$(echo "$JOBLINE" | cut -d '|' -f 2)
 
-if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then (
+if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then 
   HWID=$(echo "$JOB" | cut -d ' ' -f 2)
   if [ ${#HWID} -ne 12 ]; then
     exit 1
@@ -77,7 +77,6 @@ if [ $(echo "$JOB" | cut -d ' ' -f 1) == "deployvpn" ]; then (
 
   echo $KEY > $DIR$HWID
   kill -HUP $(ps aux | grep fastd | grep $COMMUNITY | awk '{print $2}')
-  )
 
   echo "deploy $HWID $COMMUNITY"
 fi
