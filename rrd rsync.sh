@@ -1,0 +1,1 @@
+rsync -Srt --append-verify --progress --delete --exclude 'debug' --exclude 'perl.rrd' --exclude '*.php' --exclude 'links/old' --exclude '*.pl' --exclude '*.pl' --exclude 'server-worker' --exclude 'systemqueue*' -e 'ssh -p 4337' /var/www/api/*  rrdsync@62.141.34.112:/var/db/rrd/
