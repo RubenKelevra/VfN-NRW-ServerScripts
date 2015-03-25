@@ -96,8 +96,6 @@ function get_check_fastd_key {
       logger "server-worker: importing fastd-key for new hwid '$HWID' in community '$COMMUNITY'"
       RETRY=0
     fi
-      
-    fi
   fi
   
 }
