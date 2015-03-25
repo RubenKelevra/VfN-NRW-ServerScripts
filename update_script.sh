@@ -10,8 +10,21 @@ if [ $? -ne 0 ]; then
     echo "Host $HostIP not reachable via ping."; exit 1
 fi
 
-echo "Host is reachable, SSH to query router-type..."
-Filename=`ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "uci get freifunk.fw.filename"`
+if [ -f "images/build" ]; then
+    newver=`cat images/build`
+    [ -z "$newver" ] && exit 1
+fi
+
+echo "Host is reachable, getting installed version..."
+oldver=`ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "cat /build"`
+
+if [ "$oldver" == "$newver" ]; then
+    echo "This version ($newver) has already been deployed on node $HostIP"
+    exit 0
+fi
+
+echo "getting router-type..."
+Filename=`ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "uci get freifunk.fw.filename"`
 
 if [ -z "$Filename" ]; then
     echo "Error while fetching filename"; exit 1
