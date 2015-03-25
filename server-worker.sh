@@ -3,6 +3,7 @@
 LAST=""
 LAST_file='server-worker.last'
 RETRY=0
+SLEEPTIME=10
 
 function load_check_last_file() {
   if [ -f "$LAST_file" ]; then
@@ -112,5 +113,7 @@ until [ "$RETRY" -ge 90 ]; do #10 seconds sleep * 90 times means 15 minutes retr
   if [ "$RETRY" -eq 0 ]; then
     echo $KEY > $DIR$HWID
     kill -HUP $(ps aux | grep fastd | grep $COMMUNITY | awk '{print $2}')
+  else
+    sleep $SLEEPTIME
   fi
 done
