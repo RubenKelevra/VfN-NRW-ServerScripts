@@ -16,7 +16,7 @@ if [ -f "images/build" ]; then
 fi
 
 echo "Host is reachable, getting installed version..."
-oldver=`ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "cat /build"`
+oldver=`ssh -o BatchMode=yes -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "cat /build"`
 
 if [ -z "$oldver" ]; then
     echo "I can't connect or determine the installed version, exiting"
