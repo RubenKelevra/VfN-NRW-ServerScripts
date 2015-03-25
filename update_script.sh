@@ -33,10 +33,3 @@ fi
 
 ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "sysupgrade -n /tmp/$Filename"
 
-if [ $? -eq 0 ]; then
-    echo "update successfully initiated."
-else
-    echo "update initiation failed."
-    exit 1
-fi
-
