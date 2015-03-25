@@ -18,7 +18,10 @@ fi
 echo "Host is reachable, getting installed version..."
 oldver=`ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "cat /build"`
 
-if [ "$oldver" == "$newver" ]; then
+if [ -z "$oldver" ]; then
+    echo "I can't connect or determine the installed version, exiting"
+    exit 1
+elif [ "$oldver" == "$newver" ]; then
     echo "This version ($newver) has already been deployed on node $HostIP"
     exit 0
 fi
