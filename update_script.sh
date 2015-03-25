@@ -31,7 +31,7 @@ else
     echo "Upload failed."; exit 1
 fi
 
-ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "sysupgrade -n /tmp/$Filename & sleep 1; exit" >/dev/null 2>&1
+ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "sysupgrade -n /tmp/$Filename"
 
 if [ $? -eq 0 ]; then
     echo "update successfully initiated."
