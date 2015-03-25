@@ -26,10 +26,21 @@ echo "Uploading image..."
 scp "images/$Filename" root@[$HostIP]:/tmp >/dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo "Upload completed, updating..."
+    echo "Upload completed, checking file..."
 else
     echo "Upload failed."; exit 1
 fi
 
-ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "sysupgrade -n /tmp/$Filename"
+#FIXME replace md5sum with something better.
+echo "Generating local checksum..."
+localsum=`md5sum "images/$Filename" | awk '{print $1}'`
+echo "Generating remote checksum..."
+remotesum=`ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "md5sum /tmp/$Filename" | awk '{print $1}'`
+
+if [ "$localsum" == "$remotesum" ]; then
+    echo "Checksum valid, updating..."
+    ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=4 root@$HostIP "sysupgrade -n /tmp/$Filename"
+else
+    echo "transfered has not the valid md5-sum"
+fi
 
