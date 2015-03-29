@@ -55,7 +55,7 @@ remotesum=`ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeo
 
 if [ "$localsum" == "$remotesum" ]; then
     echo "Checksum valid, updating..."
-    ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=20 root@$HostIP "killall curl;  /etc/init.d/haveged stop; rm /tmp/ff-stats/* ; rm tmp/wlanscan ; sleep 15; sync; echo 3 > /proc/sys/vm/drop_caches ; sysupgrade -n /tmp/$Filename"
+    ssh -o ServerAliveInterval=2 -o ServerAliveCountMax=5 -o ConnectTimeout=20 root@$HostIP "killall curl;  /etc/init.d/haveged stop; rm /tmp/ff-stats/* ; rm /tmp/wlanscan ; sleep 15; sync; echo 3 > /proc/sys/vm/drop_caches ; sysupgrade -n /tmp/$Filename"
 else
     echo "transfered has not the valid md5-sum"
 fi
