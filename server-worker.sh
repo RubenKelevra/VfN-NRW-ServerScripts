@@ -44,7 +44,9 @@ function parse_jobline() {
     else
       COMMUNITY_EXPECTED=$(echo "$JOB" | cut -d ' ' -f 3)
     fi
-  else #no job for us
+  else #no job for us, skipping it
+    # move JOBID one forward...
+    echo $JOBID > "$LAST_file"
     exit 0
   fi
   
